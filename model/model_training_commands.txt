@@ -1,0 +1,126 @@
+conda create -n covid19 python=3.6
+conda activate covid19
+
+############################################################################
+DATA PREPARATION
+############################################################################
+python model/data_preprocessing.py -d /data/zong/scraper_covid-MERGE/annotation/positive-updated20200525.jsonl -s data/test_positive.pkl
+python model/data_preprocessing.py -d /data/zong/scraper_covid-MERGE/annotation/cure-updated20200525.jsonl -s data/cure.pkl
+
+############################################################################
+############################################################################
+Logistic Regression Baseline
+############################################################################
+############################################################################
+
+python automate_logistic_regression_baseline_experiments.py
+
+
+
+
+############################################################################
+############################################################################
+############################################################################
+OLD - INDIVIDUAL MODEL TRAIN AND TEST COMMANDS
+############################################################################
+############################################################################
+############################################################################
+
+
+############################################################################
+############################################################################
+Logistic Regression Baseline
+############################################################################
+############################################################################
+
+############################################################################
+MODEL TRAINING
+############################################################################
+python model/logistic_regression_baseline.py -d data/test_positive_who.tsv -t "tested_positive_who" -s saved_models/lr_baseline/tested_positive_lr_model_and_features.pkl -sf model/tested_positive_who_logisitc_regression_precision_recall_curve.png > results/who_tested_positive_lr_baseline_results.txt
+
+python model/logistic_regression_baseline.py -d data/test_positive_who_without_not_specified.tsv -t "tested_positive_who" -s saved_models/lr_baseline/tested_positive_without_not_specified_lr_model_and_features.pkl -sf model/tested_positive_who_without_not_specified_logisitc_regression_precision_recall_curve.png > results/who_tested_positive_without_not_specified_lr_baseline_results.txt
+
+python model/logistic_regression_baseline.py -d data/test_positive.pkl -t tested_positive_age -st 0 -o results/lr_baseline/tested_positive_age
+############################################################################
+MODEL TESTING
+############################################################################
+
+
+############################################################################
+############################################################################
+BERT entity classification model
+############################################################################
+############################################################################
+
+############################################################################
+MODEL TRAINING
+############################################################################
+# -r is for retraining
+python model/bert_entitity_classifier.py -d data/test_positive_who.tsv -t "tested_positive_who" -s saved_models/bert_entity_classifier/who_tested_positive_4_epoch_8_batch_bert_base_cased_model -sf model/tested_positive_who_bert_entity_classifier_precision_recall_curve.png > results/who_tested_positive_bert_entity_classifier.txt
+
+python model/bert_entitity_classifier.py -d data/test_positive_who_without_not_specified.tsv -t "tested_positive_who" -s saved_models/bert_entity_classifier/who_tested_positive_without_not_specified_4_epoch_8_batch_bert_base_cased_model -sf model/tested_positive_who_without_not_specified_bert_entity_classifier_precision_recall_curve.png > results/who_tested_positive_without_not_specified_bert_entity_classifier.txt
+
+python model/bert_entitity_classifier.py -d data/test_positive.pkl -t tested_positive_where -st where -o results/bert_entity_classifier/tested_positive_where -s saved_models/bert_entity_classifier/tested_positive_where_8_epoch_32_batch_bert_base_cased_model -r
+############################################################################
+MODEL TESTING
+############################################################################
+
+
+############################################################################
+############################################################################
+COVID-Twitter-BERT entity classification model
+############################################################################
+############################################################################
+
+############################################################################
+MODEL TRAINING
+############################################################################
+# -r is for retraining
+python model/covid_bert_entitity_classifier.py -m saved_models/BERTweet_model/BERTweet_base_transformers -d data/test_positive.pkl -t tested_positive_age -st 0 -r -o results/BERTweet_entity_classifier/tested_positive_age -s saved_models/BERTweet_entity_classifier/tested_positive_age_4_epoch_8_batch_BERTweet_model
+
+
+############################################################################
+############################################################################
+BERTweet entity classification model
+############################################################################
+############################################################################
+
+############################################################################
+MODEL TRAINING
+############################################################################
+# -r is for retraining
+python model/bertweet_entitity_classifier.py -m saved_models/BERTweet_model/BERTweet_base_transformers -d data/test_positive.pkl -t tested_positive_name -st name -r -o results/BERTweet_entity_classifier/tested_positive_age -s saved_models/BERTweet_entity_classifier/tested_positive_name_4_epoch_8_batch_BERTweet_model
+
+python model/bertweet_entitity_classifier2.py -m saved_models/BERTweet_model/BERTweet_base_transformers -d data/test_positive.pkl -t tested_positive_name -st name -r -o results/BERTweet_entity_classifier2/tested_positive_age -s saved_models/BERTweet_entity_classifier2/tested_positive_name_4_epoch_8_batch_BERTweet_model2
+
+python model/bertweet_entitity_classifier2.py -m saved_models/BERTweet_model/BERTweet_base_transformers -d data/test_positive.pkl -t tested_positive_age -st age -r -o results/BERTweet_entity_classifier2/tested_positive_age -s saved_models/BERTweet_entity_classifier2/tested_positive_age_8_epoch_8_batch_BERTweet_model2
+
+
+############################################################################
+############################################################################
+Multitask BERT entity classification model
+############################################################################
+############################################################################
+
+############################################################################
+MODEL TRAINING
+############################################################################
+# -r is for retraining
+python model/multitask_bert_entitity_classifier.py -d data/test_positive.pkl -t tested_positive -o results/multitask_bert_entity_classifier/tested_positive_8_epoch_debug -s saved_models/multitask_bert_entity_classifier/tested_positive_8_epoch_32_batch_multitask_bert_model_debug -r
+
+
+############################################################################
+############################################################################
+Multitask BERT entity classification model 2 -- Single BERT model for all tasks and events
+############################################################################
+############################################################################
+
+############################################################################
+MODEL TRAINING
+############################################################################
+# -r is for retraining
+python model/multitask_bert_entitity_classifier2.py -d data/test_positive.pkl data/test_negative.pkl data/can_not_test.pkl data/death.pkl data/cure.pkl -t tested_positive tested_negative can_not_test death cure -o results/multitask_bert_entity_classifier2/all_events_8_epoch -s saved_models/multitask_bert_entity_classifier2/all_events_8_epoch_32_batch_multitask_bert_model -sf results/all_experiments_multitask_bert_entity_classifier2_results.tsv -r
+
+
+python model/multitask_bert_entitity_classifier2.py -d data/test_positive.pkl data/test_negative.pkl data/can_not_test.pkl data/death.pkl data/cure.pkl -t tested_positive tested_negative can_not_test death cure -o results/multitask_bert_entity_classifier2/all_events_12_epoch -s saved_models/multitask_bert_entity_classifier2/all_events_12_epoch_32_batch_multitask_bert_model -sf results/all_experiments_multitask_bert_entity_classifier2_12_epochs_results.tsv -r
+
