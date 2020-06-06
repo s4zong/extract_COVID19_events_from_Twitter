@@ -4,8 +4,6 @@ This repo contains the annotated corpus and code for paper ``Extracting COVID-19
 
 ### Our annotated corpus
 
-*2020.6.4: We will be releasing the annotated corpus within this week.*
-
 #### About our corpus
 
 In this work, we aim at extracting 5 types of events from Twitter: (1) tested positive, (2) tested negative, (3) can not test, (4) death and (5) cure and prevention. The following table provides statistics for our current corpus.
