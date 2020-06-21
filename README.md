@@ -2,6 +2,25 @@
 
 This repo contains the annotated corpus and code for paper ``[Extracting COVID-19 Events from Twitter](https://arxiv.org/abs/2006.02567)".
 
+```
+@misc{zong2020extracting,
+    title={Extracting COVID-19 Events from Twitter},
+    author={Shi Zong and Ashutosh Baheti and Wei Xu and Alan Ritter},
+    year={2020},
+    eprint={2006.02567},
+    archivePrefix={arXiv},
+    primaryClass={cs.CL}
+}
+```
+
+### Shared task
+
+We are organizing a shared task on COVID-19 event extraction from Twitter by using our annotated corpus at [EMNLP 2020 Workshop on User-generated Text](http://noisy-text.github.io/2020/extract_covid19_event-shared_task.html).
+
+Check `shared_task` folder for the provided baseline models and evaluation scripts for the shared task.
+
+If interested in participating, please [register](https://forms.gle/zUvxLoDohbDmBzuh6) here. For any questions related to the shared task, please contact us at [wnut.sharedtask.covid19extract@gmail.com](mailto:wnut.sharedtask.covid19extract@gmail.com.)
+
 ### Our annotated corpus
 
 #### About our corpus
@@ -18,7 +37,7 @@ In this work, we aim at extracting 5 types of events from Twitter: (1) tested po
 
 #### Corpus format
 
-All annotated tweets are stored in .jsonl file under data folder. Our annotated corpus is released in the following format.
+All annotated tweets are stored in .jsonl file under `data` folder. Our annotated corpus is released in the following format.
 
 ```angular2
 {'id': '1238504197319995397',
@@ -68,7 +87,3 @@ Both `automate_...` scripts will first preprocess the data files, then train the
 - `transformers==2.9.0`
 - `tqdm`
 - `torch==1.5.0`
-
-### Cite
-TODO add citation
-
