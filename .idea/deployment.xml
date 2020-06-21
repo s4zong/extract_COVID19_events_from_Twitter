@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="zong@sdl898-ritter2.cse.ohio-state.edu:22" autoUploadExternalChanges="true">
+  <component name="PublishConfigData" autoUpload="Always" serverName="sdl898-ritter2.cse.ohio-state.edu" autoUploadExternalChanges="true">
     <serverData>
-      <paths name="zong@sdl898-ritter2.cse.ohio-state.edu:22">
+      <paths name="sdl898-ritter2.cse.ohio-state.edu">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/zong/twitter/covid-19_github" local="$PROJECT_DIR$" />
+            <mapping deploy="/home/zong/twitter/covid-19_github" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
