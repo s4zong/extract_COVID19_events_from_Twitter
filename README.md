@@ -19,7 +19,7 @@ We are organizing a shared task on COVID-19 event extraction from Twitter by usi
 
 Check `shared_task` folder for the provided baseline models and evaluation scripts for the shared task.
 
-If interested in participating, please [register](https://forms.gle/zUvxLoDohbDmBzuh6) here. For any questions related to the shared task, please contact us at [wnut.sharedtask.covid19extract@gmail.com](mailto:wnut.sharedtask.covid19extract@gmail.com.)
+If interested in participating, please [register](https://forms.gle/zUvxLoDohbDmBzuh6) here. For any questions related to the shared task, please contact us at [wnut.sharedtask.covid19extract@gmail.com](mailto:wnut.sharedtask.covid19extract@gmail.com).
 
 ### Our annotated corpus
 
