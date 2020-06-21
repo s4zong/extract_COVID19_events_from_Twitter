@@ -15,7 +15,7 @@ This repo contains the annotated corpus and code for paper ``[Extracting COVID-1
 
 ### Shared task
 
-We are organizing a shared task on COVID-19 event extraction from Twitter by using our annotated corpus at [EMNLP 2020 Workshop on User-generated Text](http://noisy-text.github.io/2020/extract_covid19_event-shared_task.html).
+We are organizing a shared task on COVID-19 event extraction from Twitter by using our annotated corpus at [EMNLP 2020 Workshop on User-generated Text](http://noisy-text.github.io/2020/extract_covid19_event-shared_task.html). The system description papers will be peer-reviews and published as part of the EMNLP 2020 Workshop Proceedings (ACL Anthology).
 
 Check `shared_task` folder for the provided baseline models and evaluation scripts for the shared task.
 

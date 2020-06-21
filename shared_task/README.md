@@ -9,7 +9,7 @@ Here are the steps for running our logistic regression baseline on a single task
 
 0. Please follow [instructions](http://noisy-text.github.io/2020/extract_covid19_event-shared_task.html#format) to get tweet contents and use proper NLP tools to tokenize all tweets.
 
-1. Prepare the training instances in the following format. Each line contains a tuple of (`orginal_tweet_content`, `current_candidate_chunk`, `tokenized_tweet_with_candidate_chunk_masked`, `golden_chunk`, `training_label`).
+1. Prepare the training instances in the following format: each line contains a tuple of (`orginal_tweet_content`, `current_candidate_chunk`, `tokenized_tweet_with_candidate_chunk_masked`, `golden_chunk`, `training_label`).
 
 For example, in the first training instance, we replace `Tom Hanks` with `<Q_TARGET>` in the tokenized tweets. As `Tom Hanks` appears in the `golden_chunk`, training label for this instance is `1`. In the second training instance, as `both` is not annotated as a correct chunk, training lable is `0`.
 
@@ -44,6 +44,7 @@ data_dict = {}
 # as currently we consider "name" subtask, we use "name" as key
 data_dict['name'] = data_reorganized
 
+## store file in .pkl format, save_in_pickle() function in shared_task.utils
 save_in_pickle(data_dict, YOUR_PATH_TO_STORE_DATA.pkl)
 ```
 
