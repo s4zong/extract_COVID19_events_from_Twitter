@@ -49,10 +49,97 @@ def load_from_json(json_file):
         return json.load(fp)
 
 
+def read_json_line(path):
+    output = []
+    with open(path, 'r') as f:
+        for line in f:
+            output.append(json.loads(line))
+    return output
+
+
 def make_dir_if_not_exists(directory):
     if not os.path.exists(directory):
         logging.info("Creating new directory: {}".format(directory))
         os.makedirs(directory)
+
+
+def get_label_for_key_from_annotation(key, annotation, candidate_chunk):
+    global all_MERGE_annotations_DEBUG
+    label = 0
+    TEXT_SPAN_ID = 0
+    CANDIDATE_CHUNKS_ID = 0
+    FINAL_ID = TEXT_SPAN_ID
+    # tagged_chunks0 = annotation[key][0]
+    # tagged_chunks1 = annotation[key][1]
+    # if tagged_chunks0 != tagged_chunks1:
+    # 	# This happens only for MERGE option
+    # 	best_chunk = None
+    # 	best_chunk_score = -1
+    # 	tagged_chunk_scores = annotation[key][3]
+    # 	for tagged_chunk in tagged_chunks0:
+    # 		if tagged_chunk_scores[tagged_chunk] > best_chunk_score:
+    # 			# update
+    # 			best_chunk = tagged_chunk
+    # 			best_chunk_score = tagged_chunk_scores[tagged_chunk]
+    # 		elif tagged_chunk_scores[tagged_chunk] == best_chunk_score:
+    # 			# choose the smallest
+    # 			if len(tagged_chunk) < len(best_chunk):
+    # 				# update
+    # 				best_chunk = tagged_chunk
+    # 	tagged_chunks = [best_chunk]
+    # 	tagged_chunks0 = tuple(tagged_chunks0)
+    # 	tagged_chunks1 = tuple(tagged_chunks1)
+    # 	if (tagged_chunks0, tagged_chunks1) not in all_MERGE_annotations_DEBUG:
+    # 		# print(annotation[key])
+    # 		# print(tagged_chunks)
+    # 		all_MERGE_annotations_DEBUG.add((tagged_chunks0, tagged_chunks1))
+    # else:
+    # tagged_chunks = annotation[key][FINAL_ID]
+    tagged_chunks = annotation[key]
+    if tagged_chunks:
+        # if key is "name", "who_cure", and "I" is a gold chunk then add "AUTHOR OF THE TWEET" as a gold chunk
+        if key in ["name", "who_cure", "close_contact", "opinion"] and ("I" in tagged_chunks or "i" in tagged_chunks):
+            tagged_chunks.append("AUTHOR OF THE TWEET")
+
+        for tagged_chunk in tagged_chunks:
+            if tagged_chunk == candidate_chunk:
+                label = 1
+                break
+    return label, tagged_chunks
+
+
+def get_tagged_label_for_key_from_annotation(key, annotation):
+    label = 0
+    TEXT_SPAN_ID = 0
+    CANDIDATE_CHUNKS_ID = 0
+    FINAL_ID = TEXT_SPAN_ID
+    # tagged_chunks = annotation[key][FINAL_ID]
+    tagged_chunks = annotation[key]
+    if tagged_chunks == "NO_CONSENSUS":
+        tagged_chunks = ["Not Specified"]
+    return tagged_chunks
+
+
+def get_label_from_tagged_label(tagged_label):
+    if tagged_label == "Not Specified":
+        return 0
+    elif tagged_label == "Yes":
+        return 1
+    elif tagged_label == "Male":
+        return 1
+    elif tagged_label == "Female":
+        return 1
+    elif tagged_label.startswith("no_cure"):
+        return 0
+    elif tagged_label.startswith("not_effective"):
+        return 0
+    elif tagged_label.startswith("no_opinion"):
+        return 0
+    elif tagged_label.startswith("effective"):
+        return 1
+    else:
+        print(f"Unknown tagged_label {tagged_label}")
+        exit()
 
 
 def extract_instances_for_current_subtask(task_instances, sub_task):
