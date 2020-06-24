@@ -75,11 +75,11 @@ System outputs should be organized in the following format.
                            'part2-where.Response': ['Australia']}}]
 ```
 
-We will use `eval.py` to evaluate the system performance.
+We will use `eval.py` to evaluate the system performance. Evaluations will only be done for chunks other than "Not Specified".
 
 ```angular2
 python evaluation.py -p PATH_TO_YOUR_PREDICTION.jsonl
-               -g PATH_TO_GOLDEN_ANNOS.jsonl
+                     -g PATH_TO_GOLDEN_ANNOS.jsonl
 ```
 
 The golden annotation file will follow the same format as specified above. Instead of having `predicted_annotation` field, it will have a `golden_annotation` field.
