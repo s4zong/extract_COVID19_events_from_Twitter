@@ -195,7 +195,7 @@ def split_multitask_instances_in_train_dev_test(multitask_instances, TRAIN_RATIO
     original_tweets = dict()
     original_tweets_list = list()
     # text :: candidate_chunk :: tokenized_tweet_with_masked_q_token :: tagged_chunks :: question_label
-    for tweet, _, _, _, _ in multitask_instances:
+    for tweet, _, _, _, _, _ in multitask_instances:
         if tweet not in original_tweets:
             original_tweets[tweet] = 1
             original_tweets_list.append(tweet)
@@ -318,7 +318,7 @@ def compute_f1(a_gold, a_pred):
 def get_raw_scores(data, prediction_scores, positive_only=False):
     predicted_chunks_for_each_instance = dict()
     # text :: candidate_chunk :: tokenized_tweet_with_masked_q_token :: tagged_chunks :: question_label
-    for (text, chunk, tokenized_tweet_with_masked_chunk, gold_chunk, label), prediction_score in zip(data,
+    for (text, chunk, id, tokenized_tweet_with_masked_chunk, gold_chunk, label), prediction_score in zip(data,
                                                                                                      prediction_scores):
         original_text = text
         # print(text)

@@ -24,7 +24,7 @@ import matplotlib
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from shared_task.utils import log_list, make_dir_if_not_exists, save_in_pickle, load_from_pickle, \
+from utils import log_list, make_dir_if_not_exists, save_in_pickle, load_from_pickle, \
     extract_instances_for_current_subtask, split_instances_in_train_dev_test, log_data_statistics, save_in_json, \
     get_raw_scores, get_TP_FP_FN
 
