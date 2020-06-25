@@ -58,6 +58,8 @@ python shared_task/LR_baseline.py -d YOUR_PATH_TO_STORE_DATA.pkl
 
 You could run our baseline model on other subtasks by adding training instances into `data_dict`. For example, you could use `data_dict['age']` to store training instances for `age` slot. Then you could run above code by replacing `name` with `age`.
 
+Note: We also summarize all questions with corresponding candidate choices [here](https://docs.google.com/document/d/1OWFTXOZpoXNrDULq6PFXvIGarSZwpU-uLQRuV4wrJwI/edit?usp=sharing).
+
 ### Evaluation
 
 System outputs should be organized in the following format.
@@ -75,7 +77,7 @@ System outputs should be organized in the following format.
                            'part2-where.Response': ['Australia']}}]
 ```
 
-We will use `eval.py` to evaluate the system performance. Evaluations will only be done for chunks other than "Not Specified".
+We will use `eval.py` to evaluate the system performance. System predictions will be compared against the golden annotations. Evaluations will only be done for chunks other than "Not Specified". 
 
 ```angular2
 python evaluation.py -p PATH_TO_YOUR_PREDICTION.jsonl
