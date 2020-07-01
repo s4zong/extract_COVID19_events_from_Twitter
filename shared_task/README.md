@@ -3,6 +3,8 @@
 
 Check the shared task official website at: [http://noisy-text.github.io/2020/extract_covid19_event-shared_task.html](http://noisy-text.github.io/2020/extract_covid19_event-shared_task.html).
 
+**Note: We also summarize all questions with corresponding candidate choices [here](https://docs.google.com/document/d/1OWFTXOZpoXNrDULq6PFXvIGarSZwpU-uLQRuV4wrJwI/edit?usp=sharing).**
+
 ### Run baseline
 
 Here are the steps for running our logistic regression baseline on a single task: to predict if a given chunk could answer ``who is tested positive" question in tested positive event category.
@@ -57,8 +59,6 @@ python shared_task/LR_baseline.py -d YOUR_PATH_TO_STORE_DATA.pkl
 ```
 
 You could run our baseline model on other subtasks by adding training instances into `data_dict`. For example, you could use `data_dict['age']` to store training instances for `age` slot. Then you could run above code by replacing `name` with `age`.
-
-Note: We also summarize all questions with corresponding candidate choices [here](https://docs.google.com/document/d/1OWFTXOZpoXNrDULq6PFXvIGarSZwpU-uLQRuV4wrJwI/edit?usp=sharing).
 
 ### Evaluation
 
