@@ -11,9 +11,9 @@ We provide a script to download tweets by using tweepy. Prepare your Twitter API
 
 ```angular2
 python download_data.py --API_key your_API_key
-                                      --API_secret_key your_API_secret_key
-                                      --access_token your_access_token
-                                      --access_token_secret your_access_token_secret 
+                        --API_secret_key your_API_secret_key
+                        --access_token your_access_token
+                        --access_token_secret your_access_token_secret 
 ```
 
 Please allow the script to run for a while. The downloaded tweets will be under `data` folder, named `downloaded_tweets.jsonl`.
@@ -38,8 +38,7 @@ For example, in the first training instance, we replace `Tom Hanks` with `<Q_TAR
  'both',
  'Tom Hanks and his wife have <Q_TARGET> tested positive for the Coronavirus .',
  ['Tom Hanks', 'his wife'],
- 0)
-]
+ 0)]
 ```
 
 2. Store data organized in above format to a .pkl file.
