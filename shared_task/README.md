@@ -5,11 +5,24 @@ Check the shared task official website at: [http://noisy-text.github.io/2020/ext
 
 **Note: We also summarize all questions with corresponding candidate choices [here](https://docs.google.com/document/d/1OWFTXOZpoXNrDULq6PFXvIGarSZwpU-uLQRuV4wrJwI/edit?usp=sharing).**
 
+### Download tweets
+
+We provide a script to download tweets by using tweepy. Prepare your Twitter API keys and tokens, and then under `extract_COVID19_events_from_Twitter` folder run
+
+```angular2
+python download_data.py --API_key your_API_key
+                                      --API_secret_key your_API_secret_key
+                                      --access_token your_access_token
+                                      --access_token_secret your_access_token_secret 
+```
+
+Please allow the script to run for a while. The downloaded tweets will be under `data` folder, named `downloaded_tweets.jsonl`.
+
 ### Run baseline
 
 Here are the steps for running our logistic regression baseline on a single task: to predict if a given chunk could answer ``who is tested positive" question in tested positive event category.
 
-0. Please follow [instructions](http://noisy-text.github.io/2020/extract_covid19_event-shared_task.html#format) to get tweet contents and use proper NLP tools to tokenize all tweets.
+0. Please download tweets and use proper NLP tools to tokenize all tweets.
 
 1. Prepare the training instances in the following format: each line contains a tuple of (`orginal_tweet_content`, `current_candidate_chunk`, `tokenized_tweet_with_candidate_chunk_masked`, `golden_chunk`, `training_label`).
 

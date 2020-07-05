@@ -59,7 +59,7 @@ All annotated tweets are stored in .jsonl file under `data` folder. Our annotate
 }
 ```
 
-- 'id': It contains the tweet id. Due to users' privacy concerns and Twitter's terms of service, we are only able to release tweet ids. We suggest you download tweets from Twitter API, for example using [Tweepy](https://www.tweepy.org/).
+- 'id': It contains the tweet id. Due to users' privacy concerns and Twitter's terms of service, we are only able to release tweet ids. We suggest you download tweets from Twitter API, for example using [Tweepy](https://www.tweepy.org/). We also provide a script `download_data.py` for downloading tweets (instructions in `shared_task/README.md`).
 - 'candidate_chunks_offsets': This field contains the character offsets for candidate choices we present to crowdsourcing workers during annotation. Please note that there might be slight differences for tweets obtained using different methods, character offsets we provide are calculated based on the 'full_text' field of tweet obtained from Twitter API (in the following way).
 ```angular2
 a_single_tweet = api.get_status(id='id_for_tweet', tweet_mode='extended')
