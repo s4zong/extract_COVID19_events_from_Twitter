@@ -20,6 +20,8 @@ Please allow the script to run for a while. The downloaded tweets will be under 
 
 ### Run baseline
 
+*2020.7.6: We are working on providing a data pre-processing script to simplify the steps to run the baseline. We will be releasing it within this week.*
+
 Here are the steps for running our logistic regression baseline on a single task: to predict if a given chunk could answer ``who is tested positive" question in tested positive event category.
 
 0. Please download tweets and use proper NLP tools to tokenize all tweets.
