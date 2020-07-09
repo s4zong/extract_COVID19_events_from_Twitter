@@ -1,7 +1,7 @@
 
 ### load data.py
 
-from shared_task.utils import *
+from model.utils import *
 
 downloaded_ones = read_json_line('./data/downloaded_tweets-tagging.jsonl')
 downloaded_ones_dict = {}

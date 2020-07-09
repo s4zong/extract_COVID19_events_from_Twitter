@@ -40,7 +40,7 @@ This script will add tweet text and tags into original annotations.
 
 We provide a logistic regression baseline for our task. You could directly run this baseline by:
 
-`python automate_logistic_regression_baseline_experiments.py`
+```python automate_logistic_regression_baseline_experiments.py```
 
 ### Evaluation
 

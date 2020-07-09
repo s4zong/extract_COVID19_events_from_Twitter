@@ -89,7 +89,8 @@ We use [Twitter tagging tool](https://github.com/aritter/twitter_nlp) for tokeni
 We suggest using tagging tool in following way, which reads in json line format files and directly appends 'tags' field into the original file. Please make sure there is a 'text' field for each line (we have already added this field if you use our `download_data.py` script). Please use `python2` to run this tagging tool.
 
 ```angular2
-cat PATH_TO_downloaded_tweets.jsonl | python2 python/ner/extractEntities2_json.py --pos --chunk > PATH_TO_downloaded_tweets-tagging.jsonl
+cat PATH_TO_downloaded_tweets.jsonl | python2 python/ner/extractEntities2_json.py --pos --chunk
+    > PATH_TO_downloaded_tweets-tagging.jsonl
 ```
 
 Once you get the tagging file, store it under `data` folder, named `downloaded_tweets-tagging.jsonl`. Then run the following command

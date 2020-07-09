@@ -42,6 +42,26 @@ def load_from_json(json_file):
 	with open(json_file, 'r') as fp:
 		return json.load(fp)
 
+
+def read_json_line(path):
+
+	output = []
+	with open(path, 'r') as f:
+		for line in f:
+			output.append(json.loads(line))
+
+	return output
+
+
+def write_json_line(data, path):
+
+	with open(path, 'w') as f:
+		for i in data:
+			f.write("%s\n" % json.dumps(i))
+
+	return None
+
+
 def make_dir_if_not_exists(directory):
 	if not os.path.exists(directory):
 		logging.info("Creating new directory: {}".format(directory))
