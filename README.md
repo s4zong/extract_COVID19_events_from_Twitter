@@ -82,7 +82,7 @@ python download_data.py --API_key your_API_key
 
 Please allow the script to run for a while. The downloaded tweets will be under `data` folder, named `downloaded_tweets.jsonl`.
 
-### Tweets parsing and pre-processing
+#### Tweets parsing and pre-processing
 
 We use [Twitter tagging tool](https://github.com/aritter/twitter_nlp) for tokenization.
 
@@ -90,7 +90,7 @@ We suggest using tagging tool in following way, which reads in json line format 
 
 ```angular2
 cat PATH_TO_downloaded_tweets.jsonl | python2 python/ner/extractEntities2_json.py --pos --chunk
-    > PATH_TO_downloaded_tweets-tagging.jsonl
+                                    > PATH_TO_downloaded_tweets-tagging.jsonl
 ```
 
 Once you get the tagging file, store it under `data` folder, named `downloaded_tweets-tagging.jsonl`. Then run the following command
