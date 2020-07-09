@@ -160,7 +160,7 @@ def main():
 	# TODO: update the feature extractor
 	feature2i, i2feature = create_ngram_features_from(train_data)
 	logging.info(f"Total number of features extracted from train = {len(feature2i)}, {len(i2feature)}")
-	model_config["features"] = {"size":len(feature2i)}
+	model_config["features"] = {"size": len(feature2i)}
 
 	# Extract Feature vectors and labels from train and test data
 	train_X, train_Y = convert_data_to_feature_vector_and_labels(train_data, feature2i)
@@ -178,7 +178,7 @@ def main():
 	
 	# Train logistic regression classifier
 	logging.info("Training the Logistic Regression classifier")
-	lr = LogisticRegression(solver='lbfgs')
+	lr = LogisticRegression(solver='lbfgs', max_iter=1000)
 	lr.fit(train_X, train_Y)
 	model_config["model"] = "LogisticRegression(solver='lbfgs')"
 	
@@ -201,13 +201,14 @@ def main():
 	results["best_dev_threshold"] = best_threshold_based_on_F1
 	results["best_dev_F1"] = best_dev_F1
 	results["dev_t_F1_P_Rs"] = dev_t_F1_P_Rs
-	# y_pred = (clf.predict_proba(X_test)[:,1] >= 0.3).astype(bool) 
+	# y_pred = (clf.predict_proba(X_test)[:,1] >= 0.3).astype(bool)
 
 	# Test 
 	logging.info("Testing the trained classifier")
 	predictions = lr.predict(test_X)
 	probs = lr.predict_proba(test_X)
 	test_Y_prediction_probs = probs[:, 1]
+
 	cm = metrics.confusion_matrix(test_Y, predictions)
 	classification_report = metrics.classification_report(test_Y, predictions, output_dict=True)
 	logging.info(cm)
@@ -250,31 +251,31 @@ def main():
 	N = TP + FN
 	results["N"] = N
 
-	# Top predictions in the Test case
+	# # Top predictions in the Test case
 	sorted_prediction_ids = np.argsort(-test_Y_prediction_probs)
-	K = 30
-	logging.info("Top {} predictions:".format(K))
-	for i in range(K):
-		instance_id = sorted_prediction_ids[i]
-		# text :: candidate_chunk :: candidate_chunk_id :: chunk_start_text_id :: chunk_end_text_id :: tokenized_tweet :: tokenized_tweet_with_masked_q_token :: tagged_chunks :: question_label
-		list_to_print = [test_data[instance_id][0], test_data[instance_id][6], test_data[instance_id][1], str(test_Y_prediction_probs[instance_id]), str(test_Y[instance_id]), str(test_data[instance_id][-1]), str(test_data[instance_id][-2])]
-		logging.info("\t".join(list_to_print))
-	
-	# Top feature analysis
-	coefs=lr.coef_[0]
-	K = 10
-	sorted_feature_ids = np.argsort(-coefs)
-	logging.info("Top {} features:".format(K))
-	for i in range(K):
-		feature_id = sorted_feature_ids[i]
-		logging.info(f"{i2feature[feature_id]}\t{coefs[feature_id]}")
-
-	# Plot the precision recall curve
-	save_figure_file = os.path.join(args.output_dir, "Precision Recall Curve.png")
-	logging.info(f"Saving precision recall curve at {save_figure_file}")
-	disp = plot_precision_recall_curve(lr, test_X, test_Y)
-	disp.ax_.set_title('2-class Precision-Recall curve')
-	disp.ax_.figure.savefig(save_figure_file)
+	# K = 30
+	# logging.info("Top {} predictions:".format(K))
+	# for i in range(K):
+	# 	instance_id = sorted_prediction_ids[i]
+	# 	# text :: candidate_chunk :: candidate_chunk_id :: chunk_start_text_id :: chunk_end_text_id :: tokenized_tweet :: tokenized_tweet_with_masked_q_token :: tagged_chunks :: question_label
+	# 	list_to_print = [test_data[instance_id][0], test_data[instance_id][6], test_data[instance_id][1], str(test_Y_prediction_probs[instance_id]), str(test_Y[instance_id]), str(test_data[instance_id][-1]), str(test_data[instance_id][-2])]
+	# 	logging.info("\t".join(list_to_print))
+	#
+	# # Top feature analysis
+	# coefs=lr.coef_[0]
+	# K = 10
+	# sorted_feature_ids = np.argsort(-coefs)
+	# logging.info("Top {} features:".format(K))
+	# for i in range(K):
+	# 	feature_id = sorted_feature_ids[i]
+	# 	logging.info(f"{i2feature[feature_id]}\t{coefs[feature_id]}")
+	#
+	# # Plot the precision recall curve
+	# save_figure_file = os.path.join(args.output_dir, "Precision Recall Curve.png")
+	# logging.info(f"Saving precision recall curve at {save_figure_file}")
+	# disp = plot_precision_recall_curve(lr, test_X, test_Y)
+	# disp.ax_.set_title('2-class Precision-Recall curve')
+	# disp.ax_.figure.savefig(save_figure_file)
 
 	# Save the model and features in pickle file
 	model_and_features_save_file = os.path.join(args.output_dir, "model_and_features.pkl")
@@ -288,5 +289,8 @@ def main():
 	save_in_json(model_config, model_config_file)
 	logging.info(f"Saving results at {results_file}")
 	save_in_json(results, results_file)
+
+
 if __name__ == '__main__':
+
 	main()

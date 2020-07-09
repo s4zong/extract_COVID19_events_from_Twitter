@@ -16,11 +16,11 @@ logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
 
 task_type_to_datapath_dict = {
-								"tested_positive": ("/data/zong/scraper_covid-MERGE/annotation/positive-FINAL.jsonl", "data/test_positive.pkl"),
-								"tested_negative": ("/data/zong/scraper_covid-MERGE/annotation/negative-FINAL.jsonl", "data/test_negative.pkl"),
-								"can_not_test" : ("/data/zong/scraper_covid-MERGE/annotation/can_not_test-FINAL.jsonl", "data/can_not_test.pkl"),
-								"death": ("/data/zong/scraper_covid-MERGE/annotation/death-FINAL.jsonl", "data/death.pkl"),
-								"cure": ("/data/zong/scraper_covid-MERGE/annotation/cure-FINAL.jsonl", "data/cure.pkl"),
+								"tested_positive": ("./data/positive-add_text.jsonl", "./data/test_positive.pkl"),
+								"tested_negative": ("./data/negative-add_text.jsonl", "./data/test_negative.pkl"),
+								"can_not_test": ("./data/can_not_test-add_text.jsonl", "./data/can_not_test.pkl"),
+								"death": ("./data/death-add_text.jsonl", "./data/death.pkl"),
+								"cure": ("./data/cure_and_prevention-add_text.jsonl", "./data/cure_and_prevention.pkl"),
 								}
 
 REDO_DATA_FLAG = False
@@ -91,13 +91,13 @@ with open(results_tsv_save_file, "w") as tsv_out:
 			positive_f1_classification_report = classification_report['1']['f1-score']
 			accuracy = classification_report['accuracy']
 			CM = results["CM"]
-			# SQuAD results
-			total_EM = results["SQuAD_EM"]
-			total_F1 = results["SQuAD_F1"]
-			total_tweets = results["SQuAD_total"]
-			pos_EM = results["SQuAD_Pos. EM"]
-			pos_F1 = results["SQuAD_Pos. F1"]
-			total_pos_tweets = results["SQuAD_Pos. EM_F1_total"]
+			# # SQuAD results
+			# total_EM = results["SQuAD_EM"]
+			# total_F1 = results["SQuAD_F1"]
+			# total_tweets = results["SQuAD_total"]
+			# pos_EM = results["SQuAD_Pos. EM"]
+			# pos_F1 = results["SQuAD_Pos. F1"]
+			# total_pos_tweets = results["SQuAD_Pos. EM_F1_total"]
 			# Best threshold and dev F1
 			best_dev_threshold = results["best_dev_threshold"]
 			best_dev_F1 = results["best_dev_F1"]

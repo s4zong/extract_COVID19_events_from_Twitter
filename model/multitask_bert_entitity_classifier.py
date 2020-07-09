@@ -412,7 +412,7 @@ def main():
 	# Read all the data instances
 	task_instances_dict, tag_statistics, question_keys_and_tags = load_from_pickle(args.data_file)
 	data, subtasks_list = get_multitask_instances_for_valid_tasks(task_instances_dict, tag_statistics)
-	
+
 	if args.retrain:
 		logging.info("Creating and training the model from 'bert-base-cased' ")
 		# Create the save_directory if not exists
@@ -761,28 +761,28 @@ def main():
 		N = TP + FN
 		results[subtask]["N"] = N
 
-		# Top predictions in the Test case
-		prediction_scores[subtask] = np.array(prediction_scores[subtask])
-		sorted_prediction_ids = np.argsort(-prediction_scores[subtask])
-		K = 200
-		logging.info("Top {} predictions:".format(K))
-		logging.info("\t".join(["Tweet", "BERT model input", "candidate chunk", "prediction score", "predicted label", "gold label", "gold chunks"]))
-		for i in range(K):
-			instance_id = sorted_prediction_ids[i]
-			# text :: candidate_chunk :: candidate_chunk_id :: chunk_start_text_id :: chunk_end_text_id :: tokenized_tweet :: tokenized_tweet_with_masked_q_token :: tagged_chunks :: question_label
-			tweet = test_subtasks_data[subtask][instance_id][0].replace("\n", " ")
-			chunk = test_subtasks_data[subtask][instance_id][1]
-			tokenized_tweet_with_masked_chunk = test_subtasks_data[subtask][instance_id][6]
-			if chunk in ["AUTHOR OF THE TWEET", "NEAR AUTHOR OF THE TWEET"]:
-				# First element of the text will be considered as AUTHOR OF THE TWEET or NEAR AUTHOR OF THE TWEET
-				bert_model_input_text = tokenized_tweet_with_masked_chunk.replace(Q_TOKEN, "<E> </E>")
-				# print(tokenized_tweet_with_masked_chunk)
-				# print(bert_model_input_text)
-				# exit()
-			else:
-				bert_model_input_text = tokenized_tweet_with_masked_chunk.replace(Q_TOKEN, "<E> " + chunk + " </E>")
-			list_to_print = [tweet, bert_model_input_text, chunk, str(prediction_scores[subtask][instance_id]), str(predicted_labels[subtask][instance_id]), str(test_subtasks_data[subtask][instance_id][-1]), str(test_subtasks_data[subtask][instance_id][-2])]
-			logging.info("\t".join(list_to_print))
+		# # Top predictions in the Test case
+		# prediction_scores[subtask] = np.array(prediction_scores[subtask])
+		# sorted_prediction_ids = np.argsort(-prediction_scores[subtask])
+		# K = 200
+		# logging.info("Top {} predictions:".format(K))
+		# logging.info("\t".join(["Tweet", "BERT model input", "candidate chunk", "prediction score", "predicted label", "gold label", "gold chunks"]))
+		# for i in range(K):
+		# 	instance_id = sorted_prediction_ids[i]
+		# 	# text :: candidate_chunk :: candidate_chunk_id :: chunk_start_text_id :: chunk_end_text_id :: tokenized_tweet :: tokenized_tweet_with_masked_q_token :: tagged_chunks :: question_label
+		# 	tweet = test_subtasks_data[subtask][instance_id][0].replace("\n", " ")
+		# 	chunk = test_subtasks_data[subtask][instance_id][1]
+		# 	tokenized_tweet_with_masked_chunk = test_subtasks_data[subtask][instance_id][6]
+		# 	if chunk in ["AUTHOR OF THE TWEET", "NEAR AUTHOR OF THE TWEET"]:
+		# 		# First element of the text will be considered as AUTHOR OF THE TWEET or NEAR AUTHOR OF THE TWEET
+		# 		bert_model_input_text = tokenized_tweet_with_masked_chunk.replace(Q_TOKEN, "<E> </E>")
+		# 		# print(tokenized_tweet_with_masked_chunk)
+		# 		# print(bert_model_input_text)
+		# 		# exit()
+		# 	else:
+		# 		bert_model_input_text = tokenized_tweet_with_masked_chunk.replace(Q_TOKEN, "<E> " + chunk + " </E>")
+		# 	list_to_print = [tweet, bert_model_input_text, chunk, str(prediction_scores[subtask][instance_id]), str(predicted_labels[subtask][instance_id]), str(test_subtasks_data[subtask][instance_id][-1]), str(test_subtasks_data[subtask][instance_id][-2])]
+		# 	logging.info("\t".join(list_to_print))
 	
 	# Save model_config and results
 	model_config_file = os.path.join(args.output_dir, "model_config.json")

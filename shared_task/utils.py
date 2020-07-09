@@ -57,6 +57,15 @@ def read_json_line(path):
     return output
 
 
+def write_json_line(data, path):
+
+    with open(path, 'w') as f:
+        for i in data:
+            f.write("%s\n" % json.dumps(i))
+
+    return None
+
+
 def make_dir_if_not_exists(directory):
     if not os.path.exists(directory):
         logging.info("Creating new directory: {}".format(directory))

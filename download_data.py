@@ -67,5 +67,9 @@ if __name__ == '__main__':
     print('[I] number of tweets collected:', len(all_returned_tweets))
     print('===== download finishes =====')
 
+    ## add a text field for tagging
+    for each_line in all_returned_tweets:
+        each_line['text'] = each_line['full_text']
+
     ## store file
     write_json_line(all_returned_tweets, './data/downloaded_tweets.jsonl')

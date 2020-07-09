@@ -59,7 +59,7 @@ All annotated tweets are stored in .jsonl file under `data` folder. Our annotate
 }
 ```
 
-- 'id': It contains the tweet id. Due to users' privacy concerns and Twitter's terms of service, we are only able to release tweet ids. We suggest you download tweets from Twitter API, for example using [Tweepy](https://www.tweepy.org/). We also provide a script `download_data.py` for downloading tweets (instructions in `shared_task/README.md`).
+- 'id': It contains the tweet id. Due to users' privacy concerns and Twitter's terms of service, we are only able to release tweet ids.
 - 'candidate_chunks_offsets': This field contains the character offsets for candidate choices we present to crowdsourcing workers during annotation. Please note that there might be slight differences for tweets obtained using different methods, character offsets we provide are calculated based on the 'full_text' field of tweet obtained from Twitter API (in the following way).
 ```angular2
 a_single_tweet = api.get_status(id='id_for_tweet', tweet_mode='extended')
@@ -67,7 +67,53 @@ tweet_text_we_use = a_single_tweet['full_text']
 ```
 - 'annotation': It contains our annotation for the tweet. 'part1' and 'part2' denote two steps in our annotation process: (1) specific events identification and (2) slot filling. Please refer to Section 2 of our paper for detailed explanation of our annotation procedure. Also note there might be more than one candidate chunks that could answer a specific question.
 
+### Download tweets and preprocessing
 
-### Models Training and Results
+#### Download tweets
 
-*2020.7.6: In our current code release, we calculate character offsets from indices of tokenized chunks, rather than directly using character offsets as inputs. Please expect a full code release this week.*
+We provide a script to download tweets by using tweepy. Prepare your Twitter API keys and tokens, and then run
+
+```angular2
+python download_data.py --API_key your_API_key
+                        --API_secret_key your_API_secret_key
+                        --access_token your_access_token
+                        --access_token_secret your_access_token_secret 
+```
+
+Please allow the script to run for a while. The downloaded tweets will be under `data` folder, named `downloaded_tweets.jsonl`.
+
+### Tweets parsing and pre-processing
+
+We use [Twitter tagging tool](https://github.com/aritter/twitter_nlp) for tokenization.
+
+We suggest using tagging tool in following way, which reads in json line format files and directly appends 'tags' field into the original file. Please make sure there is a 'text' field for each line (we have already added this field if you use our `download_data.py` script). Please use `python2` to run this tagging tool.
+
+```angular2
+cat PATH_TO_downloaded_tweets.jsonl | python2 python/ner/extractEntities2_json.py --pos --chunk > PATH_TO_downloaded_tweets-tagging.jsonl
+```
+
+Once you get the tagging file, store it under `data` folder, named `downloaded_tweets-tagging.jsonl`. Then run the following command
+
+```angular2
+python load_data.py
+```
+
+This script will add tweet text and tags into original annotations.
+
+### Models training and results
+
+To predict the structured information (slots) within a tweet, we setup a binary classification task, where given the tweet `t` and candidate slot `s` the classifier `f` has to predict whether the slot correctly answers the question about the tweet or not `f(t,s) -> 0,1`.  <br />
+We experiment with Logistic Regression baseline and BERT-based classifier.  <br />
+- Logistic Regression baseline: masks the candidate slot `s` in the tweet `t` with a special symbol `<Q_TOKEN>` and then makes the binary prediction for each slot filling task using word n-gram features (n = 1,2,3). Model code at `model/logistic_regression_baseline.py`.
+- BERT-based classifier: Encloses the candidate slot `s` in the tweet `t` inside special entity markers start and end markers, `<E>` and `</E>` respectively. The BERT hidden representation of the entity start marker `<E>` is used to predict the final label for each task. We also share the BERT model across slot-filling task in each event type (since multiple slots within each event are related to each other). Model code at `model/multitask_bert_entity_classifier.py`.
+
+To recreate all the Logistic Regression experiments results in the paper run `python automate_logistic_regression_baseline_experiments.py`  <br />
+To recreate all the BERT classifier experiments results in the paper run `python automate_multitask_bert_entity_classifier_experiments.py`  <br />
+Both `automate_...` scripts will first preprocess the data files, then train the classifiers if they haven't and finally consolidate all the results into a single TSV file. For Logistic Regression the final results will be saved at `results/all_experiments_lr_baseline_results.tsv` and for BERT classifier the results will be saved at `results/all_experiments_multitask_bert_entity_classifier_fixed_results.tsv`  <br />
+
+#### Dependencies and their versions
+- `sklearn`
+- `scipy==1.4.1`
+- `transformers==2.9.0`
+- `tqdm`
+- `torch==1.5.0`

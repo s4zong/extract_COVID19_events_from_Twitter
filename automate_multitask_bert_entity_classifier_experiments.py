@@ -16,17 +16,17 @@ logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
 
 task_type_to_datapath_dict = {
-								"tested_positive": ("/data/zong/scraper_covid-MERGE/annotation/positive-FINAL.jsonl", "data/test_positive.pkl"),
-								"tested_negative": ("/data/zong/scraper_covid-MERGE/annotation/negative-FINAL.jsonl", "data/test_negative.pkl"),
-								"can_not_test" : ("/data/zong/scraper_covid-MERGE/annotation/can_not_test-FINAL.jsonl", "data/can_not_test.pkl"),
-								"death": ("/data/zong/scraper_covid-MERGE/annotation/death-FINAL.jsonl", "data/death.pkl"),
-								"cure": ("/data/zong/scraper_covid-MERGE/annotation/cure-FINAL.jsonl", "data/cure.pkl"),
+								"tested_positive": ("./data/positive-add_text.jsonl", "./data/test_positive.pkl"),
+								"tested_negative": ("./data/negative-add_text.jsonl", "./data/test_negative.pkl"),
+								"can_not_test": ("./data/can_not_test-add_text.jsonl", "./data/can_not_test.pkl"),
+								"death": ("./data/death-add_text.jsonl", "./data/death.pkl"),
+								"cure": ("./data/cure_and_prevention-add_text.jsonl", "./data/cure_and_prevention.pkl"),
 								}
 
 # REDO_DATA_FLAG = True
 REDO_DATA_FLAG = False
 REDO_FLAG = True
-RETRAIN_FLAG = False
+RETRAIN_FLAG = True
 # REDO_FLAG = False
 
 # We will save all the tasks and subtask's results and model configs in this dictionary
@@ -43,13 +43,12 @@ for taskname, (data_in_file, processed_out_file) in task_type_to_datapath_dict.i
 
 	# Read the data statistics
 	task_instances_dict, tag_statistics, question_keys_and_tags = load_from_pickle(processed_out_file)
-	
 
 	# We will store the list of subtasks for which we train the classifier
 	tested_tasks = list()
 	logging.info(f"Training Mutlitask BERT Entity Classifier model on {processed_out_file}")
 	# output_dir = os.path.join("results", "multitask_bert_entity_classifier", taskname)
-	# NOTE: After fixing the USER and URL tags 
+	# NOTE: After fixing the USER and URL tags
 	output_dir = os.path.join("results", "multitask_bert_entity_classifier_fixed", taskname)
 	make_dir_if_not_exists(output_dir)
 	results_file = os.path.join(output_dir, "results.json")
@@ -84,7 +83,7 @@ for taskname, (data_in_file, processed_out_file) in task_type_to_datapath_dict.i
 
 # Read the results for each task and save them in csv file
 # results_tsv_save_file = os.path.join("results", "all_experiments_multitask_bert_entity_classifier_results.tsv")
-# NOTE: After fixing the USER and URL tags 
+# NOTE: After fixing the USER and URL tags
 results_tsv_save_file = os.path.join("results", "all_experiments_multitask_bert_entity_classifier_fixed_results.tsv")
 with open(results_tsv_save_file, "w") as tsv_out:
 	writer = csv.writer(tsv_out, delimiter='\t')
@@ -99,13 +98,13 @@ with open(results_tsv_save_file, "w") as tsv_out:
 			positive_f1_classification_report = classification_report['1']['f1-score']
 			accuracy = classification_report['accuracy']
 			CM = results["CM"]
-			# SQuAD results
-			total_EM = results["SQuAD_EM"]
-			total_F1 = results["SQuAD_F1"]
-			total_tweets = results["SQuAD_total"]
-			pos_EM = results["SQuAD_Pos. EM"]
-			pos_F1 = results["SQuAD_Pos. F1"]
-			total_pos_tweets = results["SQuAD_Pos. EM_F1_total"]
+			# # SQuAD results
+			# total_EM = results["SQuAD_EM"]
+			# total_F1 = results["SQuAD_F1"]
+			# total_tweets = results["SQuAD_total"]
+			# pos_EM = results["SQuAD_Pos. EM"]
+			# pos_F1 = results["SQuAD_Pos. F1"]
+			# total_pos_tweets = results["SQuAD_Pos. EM_F1_total"]
 			# Best threshold and dev F1
 			best_dev_threshold = results["best_dev_threshold"]
 			best_dev_F1 = results["best_dev_F1"]
