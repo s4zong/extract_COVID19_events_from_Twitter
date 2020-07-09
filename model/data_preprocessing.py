@@ -19,6 +19,14 @@ parser.add_argument("-d", "--data_file", help="Path to the data file", type=str,
 parser.add_argument("-s", "--save_file", help="Path to the Instances, Statistics and Header pickle save file", type=str, required=True)
 args = parser.parse_args()
 
+def writeJSONLine(data, path):
+
+    with open(path, 'w') as f:
+        for i in data:
+            f.write("%s\n" % json.dumps(i))
+
+    return None
+
 def read_jsonl_datafile(data_file):
 	data_instances = []
 	with open(data_file, "r") as reader:
@@ -28,40 +36,9 @@ def read_jsonl_datafile(data_file):
 				data_instances.append(json.loads(line))
 	return data_instances
 
-# We will create a function for each target_time
-all_MERGE_annotations_DEBUG = set()
 def get_label_for_key_from_annotation(key, annotation, candidate_chunk):
-	global all_MERGE_annotations_DEBUG
+	tagged_chunks = annotation[key]
 	label = 0
-	TEXT_SPAN_ID = 1
-	CANDIDATE_CHUNKS_ID = 0
-	FINAL_ID = TEXT_SPAN_ID
-	tagged_chunks0 = annotation[key][0]
-	tagged_chunks1 = annotation[key][1]
-	if tagged_chunks0 != tagged_chunks1:
-		# This happens only for MERGE option
-		best_chunk = None
-		best_chunk_score = -1
-		tagged_chunk_scores = annotation[key][3]
-		for tagged_chunk in tagged_chunks0:
-			if tagged_chunk_scores[tagged_chunk] > best_chunk_score:
-				# update
-				best_chunk = tagged_chunk
-				best_chunk_score = tagged_chunk_scores[tagged_chunk]
-			elif tagged_chunk_scores[tagged_chunk] == best_chunk_score:
-				# choose the smallest
-				if len(tagged_chunk) < len(best_chunk):
-					# update
-					best_chunk = tagged_chunk
-		tagged_chunks = [best_chunk]
-		tagged_chunks0 = tuple(tagged_chunks0)
-		tagged_chunks1 = tuple(tagged_chunks1)
-		if (tagged_chunks0, tagged_chunks1) not in all_MERGE_annotations_DEBUG:
-			# print(annotation[key])
-			# print(tagged_chunks)
-			all_MERGE_annotations_DEBUG.add((tagged_chunks0, tagged_chunks1))
-	else:
-		tagged_chunks = annotation[key][FINAL_ID]
 	if tagged_chunks:
 		# if key is "name", "who_cure", and "I" is a gold chunk then add "AUTHOR OF THE TWEET" as a gold chunk
 		if key in ["name", "who_cure", "close_contact", "opinion"] and ("I" in tagged_chunks or "i" in tagged_chunks):
@@ -74,13 +51,7 @@ def get_label_for_key_from_annotation(key, annotation, candidate_chunk):
 	return label, tagged_chunks
 
 def get_tagged_label_for_key_from_annotation(key, annotation):
-	label = 0
-	TEXT_SPAN_ID = 1
-	CANDIDATE_CHUNKS_ID = 0
-	FINAL_ID = TEXT_SPAN_ID
-	tagged_chunks = annotation[key][FINAL_ID]
-	if tagged_chunks == "NO_CONSENSUS":
-		tagged_chunks = ["Not Specified"]
+	tagged_chunks = annotation[key]
 	return tagged_chunks
 
 def get_label_from_tagged_label(tagged_label):
@@ -105,6 +76,7 @@ def get_label_from_tagged_label(tagged_label):
 		exit()
 
 def find_text_to_tweet_tokens_mapping(text, tweet_tokens):
+	# NOTE: tweet_tokens is a list of strings where each element is a token
 	current_tok = 0
 	current_tok_c_pos = 0
 	n_toks = len(tweet_tokens)
@@ -139,6 +111,10 @@ def find_text_to_tweet_tokens_mapping(text, tweet_tokens):
 	assert len(tweet_tokens)-1 == current_tok and len(tweet_tokens[current_tok]) == current_tok_c_pos
 	return tweet_toks_c_mapping
 
+def get_tweet_tokens_from_tags(tags):
+	tokens = [e.rsplit("/", 3)[0] for e in tags.split()]
+	return ' '.join(tokens)
+
 def make_instances_from_dataset(dataset):
 	# Create instances for all each task.
 	# we will store instances for each task separately in a dictionary
@@ -148,7 +124,7 @@ def make_instances_from_dataset(dataset):
 	# Extract all the interesting questions' annotation keys and their corresponding question-tags
 	question_keys_and_tags = list()		# list of tuples of the format (<tag>, <dict-key>)
 	# Extract the keys and tags from first annotation in the dataset
-	dummy_annotation = dataset[0]['consensus_annotation']
+	dummy_annotation = dataset[0]['annotation']
 	for key in dummy_annotation.keys():
 		if key.startswith("part2-") and key.endswith(".Response"):
 			question_tag = key.replace("part2-", "").replace(".Response", "")
@@ -173,40 +149,139 @@ def make_instances_from_dataset(dataset):
 	# Dictionary to store unique tweets for each gold tag within each question tag
 	gold_labels_unique_tweets = {question_tag: dict() for question_tag, question_key in question_keys_and_tags}
 	skipped_chunks = 0
+	ignore_ones = []
 	for annotated_data in dataset:
 		# We will take one annotation and generate who instances based on the chunks
-		tweet_tokens = annotated_data['tokenization']
-		# print(annotated_data)
-		# exit()
+		id = annotated_data['id']
+		annotation = annotated_data['annotation']
 		text = annotated_data['text'].strip()
-		# print(text)
-		# print(tweet_tokens)
+		candidate_chunks_offsets = annotated_data['candidate_chunks_offsets']
+		candidate_chunks_from_text = [text[c[0]:c[1]] for c in candidate_chunks_offsets]
+		# print(annotated_data)
+		tags = annotated_data['tags']
+		tweet_tokens = get_tweet_tokens_from_tags(tags)
+		# logging.info(f"Text:{text}")
+		# logging.info(f"Tokenized text:{tweet_tokens}")
+		# Checking if the tokenized tweet is equal to the tweet without spaces
+		try:
+			assert re.sub("\s+", "", text) == re.sub("\s+", "", tweet_tokens)
+		except AssertionError:
+			logging.error(f"Tweet and tokenized tweets don't match in id:{id}")
+			text_without_spaces = re.sub('\s+', '', text)
+			logging.error(f"Tweets without spaces: {text_without_spaces}")
+			tweet_tokens_without_spaces = re.sub('\s+', '', tweet_tokens)
+			logging.error(f"Tokens without spaces: {tweet_tokens_without_spaces}")
+			exit()
+		tweet_tokens = tweet_tokens.split()
 		tweet_tokens_char_mapping = find_text_to_tweet_tokens_mapping(text, tweet_tokens)
-		# print(annotated_data.keys())
+		# NOTE: tweet_tokens_char_mapping is a list of list where each inner list maps every tweet_token's char to the original text char position
+		# print(tweet_tokens_char_mapping)
+		# Get candidate_chunk's offsets in terms of tweet_tokens
+		candidate_chunks_offsets_from_tweet_tokens = list()
+		ignore_flags = list()
+		for chunk_start_idx, chunk_end_idx in candidate_chunks_offsets:
+			ignore_flag = False
+			# Find the tweet_token id in which the chunk_start_idx belongs
+			chunk_start_token_idx = None
+			chunk_end_token_idx = None
+			for token_idx, tweet_token_char_mapping in enumerate(tweet_tokens_char_mapping):
+				if chunk_start_idx in tweet_token_char_mapping:
+					# if chunk start offset is the last character of the token
+					chunk_start_token_idx = token_idx
+				if (chunk_end_idx-1) in tweet_token_char_mapping:
+					# if chunk end offset is the last character of the token
+					chunk_end_token_idx = token_idx+1
+			if chunk_start_token_idx == None or chunk_end_token_idx == None:
+				logging.error(f"Tweet id:{id}\nCouldn't find chunk tokens for chunk offsets [{chunk_start_idx}, {chunk_end_idx}]:{text[chunk_start_idx:chunk_end_idx]};")  
+				logging.error(f"Found chunk start and end token idx [{chunk_start_token_idx}, {chunk_end_token_idx}]")  
+				# logging.error(f"tweet_tokens_char_mapping len {len(tweet_tokens_char_mapping)}= {tweet_tokens_char_mapping}")
+				logging.error(f"Ignoring this chunk")
+				ignore_flag = True
+				#### DOCUMENT IGNORE THINGS
+				ignore_info = {}
+				ignore_info['id'] = id
+				ignore_info['problem_chunk_id'] = [chunk_start_idx, chunk_end_idx]
+				ignore_info['problem_chunk_text'] = text[chunk_start_idx:chunk_end_idx]
+				ignore_info['whole_mapping'] = []
+				for i in tweet_tokens_char_mapping:
+					if len(i) == 1:
+						ignore_info['whole_mapping'].append([i, text[i[0]]])
+					else:
+						ignore_info['whole_mapping'].append([i, text[i[0]:i[-1]+1]])
+				ignore_info['flag'] = 'NOT_FIND_ERROR'
+				ignore_ones.append(ignore_info)
+			ignore_flags.append(ignore_flag)
+			candidate_chunks_offsets_from_tweet_tokens.append((chunk_start_token_idx, chunk_end_token_idx))
+		candidate_chunks_from_tokens = [' '.join(tweet_tokens[c[0]:c[1]]) for c in candidate_chunks_offsets_from_tweet_tokens]
+
+		# TODO: Verify if the candidate_chunks from tokens and from text are the same
+		"""
+		for chunk_text, chunk_token, ignore_flag in zip(candidate_chunks_from_text, candidate_chunks_from_tokens, ignore_flags):
+			if ignore_flag:
+				continue
+			try:
+				assert re.sub("\s+", "", chunk_text) == re.sub("\s+", "", chunk_token)
+			except AssertionError:
+				logging.error(f"Chunk and text is not matching the chunk in tokenized tweet")
+				chunk_text_without_spaces = re.sub("\s+", "", chunk_text)
+				chunk_token_without_spaces = re.sub("\s+", "", chunk_token)
+				logging.error(f"Chunk from text without spaces: {chunk_text_without_spaces}")
+				logging.error(f"Chunk from tokens without spaces: {chunk_token_without_spaces}")
+				exit()
+		"""
+		# Update the list
+		candidate_chunks_from_text = [e for ignore_flag, e in zip(ignore_flags, candidate_chunks_from_text) if not ignore_flag]
+		candidate_chunks_from_tokens = [e for ignore_flag, e in zip(ignore_flags, candidate_chunks_from_tokens) if not ignore_flag ]
+		candidate_chunks_offsets = [e for ignore_flag, e in zip(ignore_flags, candidate_chunks_offsets) if not ignore_flag ]
+		candidate_chunks_offsets_from_tweet_tokens = [e for ignore_flag, e in zip(ignore_flags, candidate_chunks_offsets_from_tweet_tokens) if not ignore_flag ]
+
+		# print_list(candidate_chunks_from_text)
+		# print_list(candidate_chunks_from_tokens)
+		# Convert annotation to token_idxs from tweet_char_offsets
+		# First get the mapping from chunk_char_offsets to chunk_token_idxs
+		chunk_char_offsets_to_token_idxs_mapping = {(offset[0],offset[1]):(c[0],c[1]) for offset, c in zip(candidate_chunks_offsets, candidate_chunks_offsets_from_tweet_tokens)}
+		# print(chunk_char_offsets_to_token_idxs_mapping)
+		annotation_tweet_tokens = dict()
+		for key, value in annotation.items():
+			# print(key, value)
+			if value == "NO_CONSENSUS":
+				new_assignments = ["Not Specified"]
+			else:
+				new_assignments = list()
+				for assignment in value:
+					if type(assignment) == list:
+						# get the candidate_chunk from tweet_tokens
+						# print(chunk_char_offsets_to_token_idxs_mapping.keys())
+						gold_chunk_token_idxs = chunk_char_offsets_to_token_idxs_mapping[tuple(assignment)]
+						new_assignment = ' '.join(tweet_tokens[gold_chunk_token_idxs[0]:gold_chunk_token_idxs[1]])
+						new_assignments.append(new_assignment)
+					else:
+						new_assignments.append(assignment)
+			annotation_tweet_tokens[key] = new_assignments
+
+		# print(annotation)
+		# print(annotation_tweet_tokens)
+		# print(question_keys_and_tags)
 		# exit()
 		# change the URLs to special URL tag
 		# tweet_tokens = [URL_TOKEN if e.startswith("http") or 'twitter.com' in e or e.startswith('www.') else e for e in tweet_tokens]
 		final_tweet_tokens = [URL_TOKEN if e.startswith("http") or 'twitter.com' in e or e.startswith('www.') else e for e in tweet_tokens]
-		tags = annotated_data['tags']
-		candidate_chunks = annotated_data['candidate_chunks']
-		extracted_chunks_NP = annotated_data['extracted_chunks_NP']
-		annotation = annotated_data['consensus_annotation']
-		candidate_chunks_with_id = annotated_data['candidate_chunks_with_id']
+		final_candidate_chunks_with_token_id = [(f"{c[0]}_{c[1]}", ' '.join(tweet_tokens[c[0]:c[1]]), c) for c in candidate_chunks_offsets_from_tweet_tokens]
 		
 		for question_tag, question_key in question_keys_and_tags:
 			
 			if question_tag in ["name", "close_contact", "who_cure", "opinion"]:
 				# add "AUTHOR OF THE TWEET" as a candidate chunk
-				candidate_chunks_with_id.append(["author_chunk", "AUTHOR OF THE TWEET", [0,0], "author_chunk"])
-				# print(candidate_chunks_with_id)
+				final_candidate_chunks_with_token_id.append(["author_chunk", "AUTHOR OF THE TWEET", [0,0]])
+				# print(final_candidate_chunks_with_token_id)
 				# exit()
 			elif question_tag in ["where", "recent_travel"]:
 				# add "NEAR AUTHOR OF THE TWEET" as a candidate chunk
-				candidate_chunks_with_id.append(["near_author_chunk", "NEAR AUTHOR OF THE TWEET", [0,0], "near_author_chunk"])
+				final_candidate_chunks_with_token_id.append(["near_author_chunk", "AUTHOR OF THE TWEET", [0,0]])
 
 			# If there are more then one candidate slot with the same candidate chunk then simply keep the first occurrence. Remove the rest.
 			current_candidate_chunks = set()
-			for candidate_chunk_with_id in candidate_chunks_with_id:
+			for candidate_chunk_with_id in final_candidate_chunks_with_token_id:
 				candidate_chunk_id = candidate_chunk_with_id[0]
 				candidate_chunk = candidate_chunk_with_id[1]
 
@@ -215,38 +290,20 @@ def make_instances_from_dataset(dataset):
 					continue
 
 				chunk_start_id = candidate_chunk_with_id[2][0]
+				chunk_start_text_id = tweet_tokens_char_mapping[chunk_start_id][0]
 				chunk_end_id = candidate_chunk_with_id[2][1]
+				# print(len(tweet_tokens_char_mapping), len(tweet_tokens), chunk_start_id, chunk_end_id)
+				chunk_end_text_id = tweet_tokens_char_mapping[chunk_end_id-1][-1]+1
 				
-				if candidate_chunk in ["AUTHOR OF THE TWEET", "NEAR AUTHOR OF THE TWEET"]:
+				if candidate_chunk == "AUTHOR OF THE TWEET":
 					# No need to verify or fix this candidate_chunk
 					# print("VERIFY if chunk coming here!")
 					# exit()
 					pass
 				else:
-					# Verify if the candidate chunk is correct and aligns with the tweet and tokens
-					if ' '.join(tweet_tokens[chunk_start_id:chunk_end_id]) != candidate_chunk:
-						# Use the one from tweet_tokens
-						logging.debug(f"Prev:{candidate_chunk}||New:{' '.join(tweet_tokens[chunk_start_id:chunk_end_id])}|")
-						candidate_chunk = ' '.join(tweet_tokens[chunk_start_id:chunk_end_id])
-					if chunk_end_id >= len(tweet_tokens):
+					if chunk_end_id > len(tweet_tokens):
 						# Incorrect chunk end id. Skip this chunk
 						continue
-					# Find chunk_start_text_id and chunk_end_text_id
-					chunk_start_text_id = tweet_tokens_char_mapping[chunk_start_id][0]
-					# print(candidate_chunk)
-					# print(tweet_tokens)
-					# print(chunk_start_id, chunk_end_id, len(tweet_tokens_char_mapping), len(tweet_tokens))
-					chunk_end_text_id = tweet_tokens_char_mapping[chunk_end_id-1][-1]
-					# print(text[chunk_start_text_id:chunk_end_text_id+1])
-					candidate_chunk_from_text = text[chunk_start_text_id:chunk_end_text_id+1]
-					if re.sub(r"\s+", "", candidate_chunk) != re.sub(r"\s+", "", text[chunk_start_text_id:chunk_end_text_id+1]):
-						# Trusting the text of the tweet
-						logging.warn(f"Conflict in given candidate chunk and tweet_text")
-						logging.warn(f"Given candidate chunk = {candidate_chunk}")
-						logging.warn(f"Text in tweet = {text[chunk_start_text_id:chunk_end_text_id+1]}")
-						logging.warn(f"Text in tweet used!")
-						exit()
-						candidate_chunk = text[chunk_start_text_id:chunk_end_text_id+1]
 					candidate_chunk = ' '.join(final_tweet_tokens[chunk_start_id:chunk_end_id])
 
 				if candidate_chunk in current_candidate_chunks:
@@ -261,8 +318,12 @@ def make_instances_from_dataset(dataset):
 				# Find gold labels for the current question and candidate chunk
 				if question_tag in ["relation", "gender_male", "gender_female", "believe", "binary-relation", "binary-symptoms", "symptoms", "opinion"]:
 					# If the question is a yes/no question. It is for the name candidate chunk
-					special_tagged_chunks = get_tagged_label_for_key_from_annotation(question_key, annotation)
-					assert len(special_tagged_chunks) == 1
+					special_tagged_chunks = get_tagged_label_for_key_from_annotation(question_key, annotation_tweet_tokens)
+					try:
+						assert len(special_tagged_chunks) == 1
+					except AssertionError:
+						logging.error(f"for question_tag {question_tag} the special_tagged_chunks = {special_tagged_chunks}")
+						exit()
 					tagged_label = special_tagged_chunks[0]
 					if tagged_label == "No":
 						tagged_label = "Not Specified"
@@ -276,7 +337,7 @@ def make_instances_from_dataset(dataset):
 						special_question_label = get_label_from_tagged_label(tagged_label)
 
 					if question_tag == "opinion":
-						# question_label, tagged_chunks = get_label_for_key_from_annotation("part2-who_cure.Response", annotation, candidate_chunk)
+						# question_label, tagged_chunks = get_label_for_key_from_annotation("part2-who_cure.Response", annotation_tweet_tokens, candidate_chunk)
 						tagged_chunks = []
 						if candidate_chunk == "AUTHOR OF THE TWEET":
 							question_label = 1
@@ -284,14 +345,14 @@ def make_instances_from_dataset(dataset):
 						else:
 							question_label = 0
 					else:
-						question_label, tagged_chunks = get_label_for_key_from_annotation("part2-name.Response", annotation, candidate_chunk)
+						question_label, tagged_chunks = get_label_for_key_from_annotation("part2-name.Response", annotation_tweet_tokens, candidate_chunk)
 					question_label = question_label & special_question_label
 					if question_label == 0:
 						tagged_chunks = []
 				else:
-					question_label, tagged_chunks = get_label_for_key_from_annotation(question_key, annotation, candidate_chunk)
+					question_label, tagged_chunks = get_label_for_key_from_annotation(question_key, annotation_tweet_tokens, candidate_chunk)
 					# if question_tag == "close_contact" and question_label == 1:
-					# 	print(candidate_chunk, annotation[question_key], question_label)
+					# 	print(candidate_chunk, annotation_tweet_tokens[question_key], question_label)
 
 				# Add instance
 				tokenized_tweet = ' '.join(final_tweet_tokens)
@@ -332,6 +393,7 @@ def main():
 	dataset = read_jsonl_datafile(args.data_file)
 	logging.info(f"Total annotations:{len(dataset)}")
 	logging.info(f"Creating labeled data instances from annotations...")
+	print(dataset[0].keys())
 	task_instances_dict, tag_statistics, question_keys_and_tags = make_instances_from_dataset(dataset)
 	# Save in pickle file
 	logging.info(f"Saving all the instances, statistics and labels in {args.save_file}")
