@@ -5,6 +5,8 @@ Check the shared task official website at: [http://noisy-text.github.io/2020/ext
 
 **Note: We also summarize all questions with corresponding candidate choices [here](https://docs.google.com/document/d/1OWFTXOZpoXNrDULq6PFXvIGarSZwpU-uLQRuV4wrJwI/edit?usp=sharing).**
 
+## Data Preparation
+
 ### Download tweets
 
 We provide a script to download tweets by using tweepy. Prepare your Twitter API keys and tokens, and then under `extract_COVID19_events_from_Twitter` folder run
@@ -37,7 +39,7 @@ python load_data.py
 
 This script will add tweet text and tags into original annotations.
 
-### Run baseline
+## Run baseline
 
 We provide a logistic regression baseline for our task. You could directly run this baseline by:
 
@@ -45,9 +47,27 @@ We provide a logistic regression baseline for our task. You could directly run t
 python automate_logistic_regression_baseline_experiments.py
 ```
 
-### Evaluation
+## Evaluation Period (Sep. 7, 2020 - Sep. 11, 2020)
 
-We will only evaluate the system outputs for slot filling questions (part2.xxx.response). System outputs should be organized in the following format.
+**Deadline: Sep. 11, 2020 (AOE https://www.timeanddate.com/time/zones/aoe)**
+
+We will only evaluate the system outputs for slot filling questions (part2.XXX.Response). Please read the following instructions carefully for how to correctly format your system outputs (Basically we ask you to follow the same format as training data to organize your prediction outputs).
+
+Please see e-mail annoucements (to be sent) for downloading the data. We prepare 500 tweets for each event category.
+
+### Results submission link
+
+Please upload your results at https://forms.gle/8tDfzMQp7mxQmFvk7. We will only allow ONE submission for each team. If multiple runs submitted by accident, please email us at wnut.sharedtask.covid19extract@gmail.com to specify which one run you want us to include in the official evaluation. 
+
+### Prediction format for each tweet
+
+Specifically, for each tweet:
+
+1. It should contain keys "id" and "predicted_annotation", and "predicted_annotation" contains your prediction results.
+2. Your prediction results shall be stored within a list for each slot.
+3. Do NOT use character offsets, directly extract the corresponding text from tweet contents.
+
+A sample output should look like:
 
 ```angular2
 [{'id': '1238504197319995397',
@@ -62,6 +82,45 @@ We will only evaluate the system outputs for slot filling questions (part2.xxx.r
                            'part2-where.Response': ['Australia']}}]
 ```
 
+**PLEASE READ:**
+
+0. It doesn't matter if your predictions are lowercased or uppercased.
+1. For `name` slot for ALL event types, you shall replace any predicted chunks containing "I" (or any variations of "I" for example "I'm") with "AUTHOR OF THE TWEET". In other words, only use "AUTHOR OF THE TWEET" if it is the answer for the `name` slot.
+2. For `opinion` slot in cure & prevention category, you shall only have two labels: "effective" and "not_effective" ("no_opinion", "no_cure" and "not_effective" will be merged into "not_effective").
+3. For `relation` slot and `symptoms` slot, you shall only have two labels: "yes" and "not specified" ("no" and "not specified" will be merged into "not specified").
+4. The following slots will be excluded in the final evaluation, as too few annotations are collected in the test set.
+
+- Tested Positive: No slots will be excluded
+- Tested Negative: "how long" slots will be excluded
+- Can Not Test: No slots will be excluded
+- Death: "symptom" slot will be excluded
+- Cure: No slots will be excluded
+
+### Prediction format for each category
+
+You are required to generate a SEPARATE .jsonl file for each category. Please name your file by using `TEAM_NAME-CATEGORL_NAME.jsonl` (for `CAGEGORY_NAME` please use one of the following: "positive", "negative", "can_not_test", "death" and "cure").
+
+For example, if the team name is OSU_NLP, then the submission folder shall be organized as follows:
+
+```angular2
+OSU_NLP/
+     ├─ OSU_NLP-positive.jsonl
+     ├─ OSU_NLP-negative.jsonl
+     ├─ OSU_NLP-can_not_test.jsonl
+     ├─ OSU_NLP-death.jsonl
+     ├─ OSU_NLP-cure.jsonl
+```
+
+Once you have files for all 5 categories, pack all model predictions in a SINGLE .zip file. The name of your .zip file should be `TEAM_NAME.zip`. In above case, it shall be `OSU_NLP.zip`.
+
+We provide a format checker `format_checker.py` to help you check if your predictions have met our format requirements. You could run our format checker script by
+
+```angular2
+python format_checker.py -f PATH_TO_YOUR_PREDICTION_FOLDER/
+```
+
+### Evaluation script
+
 We will use `eval.py` to evaluate the system performance. System predictions will be compared against the golden annotations. Evaluations will only be done for chunks other than "Not Specified". 
 
 ```angular2
@@ -70,5 +129,3 @@ python evaluation.py -p PATH_TO_YOUR_PREDICTION.jsonl
 ```
 
 The golden annotation file will follow the same format as specified above. Instead of having `predicted_annotation` field, it will have a `golden_annotation` field.
-
-
