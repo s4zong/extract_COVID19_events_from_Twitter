@@ -53,7 +53,7 @@ python automate_logistic_regression_baseline_experiments.py
 
 We will only evaluate the system outputs for slot filling questions (part2.XXX.Response). Please read the following instructions carefully for how to correctly format your system outputs (Basically we ask you to follow the same format as training data to organize your prediction outputs).
 
-Please see e-mail annoucements (to be sent) for downloading the data. We prepare 500 tweets for each event category.
+Please see e-mail announcements (to be sent) for downloading the data. We prepare 500 tweets for each event category.
 
 ### Results submission link
 
@@ -70,7 +70,7 @@ Specifically, for each tweet:
 A sample output should look like:
 
 ```angular2
-[{'id': '1238504197319995397',
+{'id': '1238504197319995397',
   'predicted_annotation': {'part2-age.Response': ['Not Specified'],
                            'part2-close_contact.Response': ['Not Specified'],
                            'part2-employer.Response': ['Not Specified'],
@@ -79,7 +79,7 @@ A sample output should look like:
                            'part2-recent_travel.Response': ['Not Specified'],
                            'part2-relation.Response': ['Not Specified'],
                            'part2-when.Response': ['Friday'],
-                           'part2-where.Response': ['Australia']}}]
+                           'part2-where.Response': ['Australia']}}
 ```
 
 **PLEASE READ:**
