@@ -49,7 +49,7 @@ python automate_logistic_regression_baseline_experiments.py
 
 ## Evaluation Period (Sep. 7, 2020 - Sep. 11, 2020)
 
-**Deadline: Sep. 11, 2020 (AOE https://www.timeanddate.com/time/zones/aoe)**
+**Deadline: Sep. 11, 2020 11:59pm AoE (https://www.timeanddate.com/time/zones/aoe)**
 
 We will only evaluate the system outputs for slot filling questions (part2.XXX.Response). Please read the following instructions carefully for how to correctly format your system outputs (Basically we ask you to follow the same format as training data to organize your prediction outputs).
 
@@ -71,15 +71,15 @@ A sample output should look like:
 
 ```angular2
 {'id': '1238504197319995397',
-  'predicted_annotation': {'part2-age.Response': ['Not Specified'],
-                           'part2-close_contact.Response': ['Not Specified'],
-                           'part2-employer.Response': ['Not Specified'],
-                           'part2-gender.Response': ['Not Specified'],
-                           'part2-name.Response': ['Rita Wilson', 'Tom Hanks'],
-                           'part2-recent_travel.Response': ['Not Specified'],
-                           'part2-relation.Response': ['Not Specified'],
-                           'part2-when.Response': ['Friday'],
-                           'part2-where.Response': ['Australia']}}
+ 'predicted_annotation': {'part2-age.Response': ['Not Specified'],
+                          'part2-close_contact.Response': ['Not Specified'],
+                          'part2-employer.Response': ['Not Specified'],
+                          'part2-gender.Response': ['Not Specified'],
+                          'part2-name.Response': ['Rita Wilson', 'Tom Hanks'],
+                          'part2-recent_travel.Response': ['Not Specified'],
+                          'part2-relation.Response': ['Not Specified'],
+                          'part2-when.Response': ['Friday'],
+                          'part2-where.Response': ['Australia']}}
 ```
 
 **PLEASE READ:**
