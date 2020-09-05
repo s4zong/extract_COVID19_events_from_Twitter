@@ -27,7 +27,7 @@ def main():
         golden_predictions_dict[each_line['id']] = each_line
 
     ## question tags
-    question_tag = system_predictions[0]['predicted_annotation']
+    question_tag = golden_predictions[0]['golden_annotation']
 
     ## evaluation
     result = []
