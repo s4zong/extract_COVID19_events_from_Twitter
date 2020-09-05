@@ -36,8 +36,8 @@ def main():
         curr_task = {}
         TP, FP, FN = 0.0, 0.0, 0.0
         for each_line in system_predictions:
-            curr_sys_pred = [i for i in each_line['predicted_annotation'][each_task] if i != 'Not Specified']
-            curr_golden_ann = [i for i in golden_predictions_dict[each_line['id']]['golden_annotation'][each_task] if i != 'Not Specified']
+            curr_sys_pred = [i.lower() for i in each_line['predicted_annotation'][each_task] if i != 'Not Specified']
+            curr_golden_ann = [i.lower() for i in golden_predictions_dict[each_line['id']]['golden_annotation'][each_task] if i != 'Not Specified']
             # print(curr_sys_pred, curr_golden_ann)
             if len(curr_golden_ann) > 0:
                 for predicted_chunk in curr_sys_pred:
