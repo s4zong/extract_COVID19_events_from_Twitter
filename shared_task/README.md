@@ -85,9 +85,9 @@ A sample output should look like:
 **PLEASE READ:**
 
 0. It doesn't matter if your predictions are lowercased or uppercased.
-1. For `name` slot and `close_contact` slot for ALL event types, you shall replace "I" (or any variations of "I", for example "I'm") with "AUTHOR OF THE TWEET". In other words, only use "AUTHOR OF THE TWEET" if it is the answer for the `name` slot.
-2. For `opinion` slot in cure & prevention category, you shall only have two labels: "effective" and "not_effective" ("no_opinion", "no_cure" and "not_effective" will be merged into "not_effective").
-3. For `relation` slot and `symptoms` slot, you shall only have two labels: "yes" and "not specified" ("no" and "not specified" will be merged into "not specified").
+1. For `name` slot and `close_contact` slot for ALL event types, please replace "I" (or any variations of "I", for example "I'm") with "AUTHOR OF THE TWEET". In other words, only use "AUTHOR OF THE TWEET" if it is the answer for the `name` slot.
+2. For `opinion` slot in cure & prevention category, you should only have two labels: "effective" and "not_effective" ("no_opinion", "no_cure" and "not_effective" will be merged into "not_effective").
+3. For `relation` slot and `symptoms` slot, you should only have two labels: "yes" and "not specified" ("no" and "not specified" will be merged into "not specified").
 4. The following slots will be excluded in the final evaluation, as too few annotations are collected in the test set.
 
 - Tested Positive: No slots will be excluded
