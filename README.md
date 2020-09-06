@@ -21,6 +21,8 @@ Check `shared_task` folder for the provided baseline models and evaluation scrip
 
 If interested in participating, please [register](https://forms.gle/zUvxLoDohbDmBzuh6) here. For any questions related to the shared task, please contact us at [wnut.sharedtask.covid19extract@gmail.com](mailto:wnut.sharedtask.covid19extract@gmail.com).
 
+2020-09-06: We have started our evaluation period. Check detailed information at https://github.com/viczong/extract_COVID19_events_from_Twitter/tree/master/shared_task#evaluation-period-sep-7-2020---sep-11-2020.
+
 ### Our annotated corpus
 
 #### About our corpus
