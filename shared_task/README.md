@@ -53,7 +53,7 @@ python automate_logistic_regression_baseline_experiments.py
 
 We will only evaluate the system outputs for slot filling questions (part2.XXX.Response). Please read the following instructions carefully for how to correctly format your system outputs (Basically we ask you to follow the same format as training data to organize your prediction outputs).
 
-Please see e-mail announcements (to be sent) for downloading the data. We prepare 500 tweets for each event category.
+Please see e-mail announcements (Dropbox link for the test data has been sent on Sep. 6, 2020) for downloading the data. We prepare 500 tweets for each event category.
 
 ### Results submission link
 
