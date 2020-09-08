@@ -110,8 +110,16 @@ We experiment with Logistic Regression baseline and BERT-based classifier.  <br 
 - Logistic Regression baseline: masks the candidate slot `s` in the tweet `t` with a special symbol `<Q_TOKEN>` and then makes the binary prediction for each slot filling task using word n-gram features (n = 1,2,3). Model code at `model/logistic_regression_baseline.py`.
 - BERT-based classifier: Encloses the candidate slot `s` in the tweet `t` inside special entity markers start and end markers, `<E>` and `</E>` respectively. The BERT hidden representation of the entity start marker `<E>` is used to predict the final label for each task. We also share the BERT model across slot-filling task in each event type (since multiple slots within each event are related to each other). Model code at `model/multitask_bert_entity_classifier.py`.
 
-To recreate all the Logistic Regression experiments results in the paper run `python automate_logistic_regression_baseline_experiments.py`  <br />
-To recreate all the BERT classifier experiments results in the paper run `python automate_multitask_bert_entity_classifier_experiments.py`  <br />
+To recreate all the Logistic Regression experiments results in the paper run 
+```angular2
+python automate_logistic_regression_baseline_experiments.py
+```
+
+To recreate all the BERT classifier experiments results in the paper run
+```angular2
+python automate_multitask_bert_entity_classifier_experiments.py
+```
+
 Both `automate_...` scripts will first preprocess the data files, then train the classifiers if they haven't and finally consolidate all the results into a single TSV file. For Logistic Regression the final results will be saved at `results/all_experiments_lr_baseline_results.tsv` and for BERT classifier the results will be saved at `results/all_experiments_multitask_bert_entity_classifier_fixed_results.tsv`  <br />
 
 #### Dependencies and their versions
