@@ -66,6 +66,7 @@ Specifically, for each tweet:
 1. It should contain keys "id" and "predicted_annotation", and "predicted_annotation" contains your prediction results.
 2. Your prediction results shall be stored within a list for each slot.
 3. Do NOT use character offsets, directly extract the corresponding text from tweet contents.
+4. Please use the slot tags (part2.XXX.Response) in the released data without changing them.
 
 A sample output should look like:
 
