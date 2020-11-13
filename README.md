@@ -15,7 +15,7 @@ This repo contains the annotated corpus and code for paper ``[Extracting COVID-1
 
 ### Get access to our data
 
-2020-11-13: Due to privacy concerns and Twitter's term of services, we are removing the orginal `data` folder in this repo. If you want to get access to our dataset, please write e-mail to zong.56@osu.edu and cc alan.ritter@cc.gatech.edu. Thank you for your understanding!
+2020-11-13: To get access to our dataset, please write e-mail to zong.56@osu.edu and cc alan.ritter@cc.gatech.edu. Thanks!
 
 ### Our annotated corpus
 
