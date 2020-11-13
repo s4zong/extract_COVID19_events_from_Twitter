@@ -13,15 +13,9 @@ This repo contains the annotated corpus and code for paper ``[Extracting COVID-1
 }
 ```
 
-### Shared task
+### Get access to our data
 
-We are organizing a shared task on COVID-19 event extraction from Twitter by using our annotated corpus at [EMNLP 2020 Workshop on User-generated Text](http://noisy-text.github.io/2020/extract_covid19_event-shared_task.html). The system description papers will be peer-reviews and published as part of the EMNLP 2020 Workshop Proceedings (ACL Anthology).
-
-Check `shared_task` folder for the provided baseline models and evaluation scripts for the shared task.
-
-If interested in participating, please [register](https://forms.gle/zUvxLoDohbDmBzuh6) here. For any questions related to the shared task, please contact us at [wnut.sharedtask.covid19extract@gmail.com](mailto:wnut.sharedtask.covid19extract@gmail.com).
-
-2020-09-06: We have started our evaluation period. Check detailed information at https://github.com/viczong/extract_COVID19_events_from_Twitter/tree/master/shared_task#evaluation-period-sep-7-2020---sep-11-2020.
+2020-11-13: Due to privacy concerns and Twitter's term of services, we are removing the orginal `data` folder in this repo. If you want to get access to our dataset, please write e-mail to zong.56@osu.edu and cc alan.ritter@cc.gatech.edu. Thank you for your understanding!
 
 ### Our annotated corpus
 
@@ -128,3 +122,9 @@ Both `automate_...` scripts will first preprocess the data files, then train the
 - `transformers==2.9.0`
 - `tqdm`
 - `torch==1.5.0`
+
+### Shared task
+
+We are organizing a shared task on COVID-19 event extraction from Twitter by using our annotated corpus at [EMNLP 2020 Workshop on User-generated Text](http://noisy-text.github.io/2020/extract_covid19_event-shared_task.html). The system description papers will be peer-reviews and published as part of the EMNLP 2020 Workshop Proceedings (ACL Anthology).
+
+Check `shared_task` folder for the provided baseline models and evaluation scripts for the shared task.
